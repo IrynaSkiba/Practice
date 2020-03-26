@@ -3,7 +3,8 @@ package bsuir.dao.entity;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -11,15 +12,16 @@ import java.util.List;
 public class Event {
     private int id;
     private String name;
-    private LocalDateTime date;
+    private BigDecimal cost;
     private User user;
     private List<Service> services;
 
-    public Event(int id, String name, LocalDateTime date, User user) {
+    public Event(int id, String name, BigDecimal cost, User user) {
         this.id = id;
         this.name = name;
-        this.date = date;
+        this.cost = cost;
         this.user = user;
+        this.services = Collections.emptyList();
     }
 
     public Event(int id) {
@@ -34,7 +36,7 @@ public class Event {
         return "{" +
                 "\"id\":" + getId() +
                 ", \"name\":\"" + getName() + '\"' +
-                ", \"date\":" + getDate().toString() +
+                ", \"cost\":" + getCost() +
                 '}';
     }
 }

@@ -6,7 +6,6 @@ import bsuir.service.CrudService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 public class UserService implements CrudService<User> {
     private UserDao userDao;
@@ -17,10 +16,6 @@ public class UserService implements CrudService<User> {
 
     @Override
     public void create(User user) {
-        while (idAlreadyExist(user.getId())) {
-            Random random = new Random(2147483647);
-            user.setId(random.nextInt());
-        }
         userDao.save(user);
     }
 
@@ -48,10 +43,6 @@ public class UserService implements CrudService<User> {
     public void delete(int id) {
         Optional<User> optional = userDao.get(id);
         optional.ifPresent(event -> userDao.delete(event));
-    }
-
-    private boolean idAlreadyExist(int id) {
-        return userDao.getAll().stream().anyMatch(l -> l.getId() == id);
     }
 
     public boolean loginAlreadyExist(String login) {

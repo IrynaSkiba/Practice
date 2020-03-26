@@ -3,6 +3,7 @@ package bsuir.dao.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -10,13 +11,14 @@ import java.util.List;
 public class Service {
     private int id;
     private String name;
-    private int phone;
+    private long phone;
     private List<Event> events;
 
-    public Service(int id, String name, int phone) {
+    public Service(int id, String name, long phone) {
         this.id = id;
         this.name = name;
         this.phone = phone;
+        this.events = Collections.emptyList();
     }
 
     public Service(int id) {

@@ -2,7 +2,6 @@ package bsuir.dao.dao.impl;
 
 import bsuir.dao.dao.ConnectorDB;
 import bsuir.dao.dao.CrudDao;
-import bsuir.dao.entity.Event;
 import bsuir.dao.entity.Service;
 
 import java.sql.*;
@@ -29,17 +28,10 @@ public class ServiceDao implements CrudDao<Service> {
             while (rs.next()) {
                 if (flag) {
                     String name = rs.getString("name");
-                    int phone = rs.getInt("phone");
+                    long phone = rs.getInt("phone");
 
                     service = new Service(id, name, phone);
                     flag = false;
-                }
-
-                if (rs.getInt("event_id") != 0 && !eventSet.contains(rs.getInt("event_id"))) {
-                    int event_id = rs.getInt("event_id");
-                    Event event = new Event(event_id);
-                    service.getEvents().add(event);
-                    eventSet.add(rs.getInt("event_id"));
                 }
             }
         } catch (SQLException e) {
@@ -50,8 +42,6 @@ public class ServiceDao implements CrudDao<Service> {
 
     @Override
     public List<Service> getAll() {
-        HashSet<Integer> hashSet = new HashSet<>();
-        HashSet<Integer> eventSet = new HashSet<>();
         Service service;
         List<Service> services = new ArrayList<>();
         try (Connection connection = ConnectorDB.getConnection();
@@ -59,23 +49,10 @@ public class ServiceDao implements CrudDao<Service> {
             ResultSet rs = statement.executeQuery(SQL_SELECT_ALL_SERVICES);
             while (rs.next()) {
                 int id = rs.getInt("service_id");
-
-                if (!hashSet.contains(id)) {
-                    hashSet.add(id);
-                    String name = rs.getString("name");
-                    int phone = rs.getInt("phone");
-                    service = new Service(id, name, phone);
-                    services.add(service);
-                } else {
-                    service = get(id).get();
-                }
-
-                if (rs.getInt("event_id") != 0 && !eventSet.contains(rs.getInt("event_id"))) {
-                    int event_id = rs.getInt("event_id");
-                    Event event = new Event(event_id);
-                    service.getEvents().add(event);
-                    eventSet.add(rs.getInt("event_id"));
-                }
+                String name = rs.getString("name");
+                long phone = rs.getLong("phone");
+                service = new Service(id, name, phone);
+                services.add(service);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -126,18 +103,17 @@ public class ServiceDao implements CrudDao<Service> {
         }
     }
 
-    private static String generateInsert(String name, int phone) {
-        String str = "INSERT INTO services (name, phone) " +
-                "VALUES ('" + name + "', " + phone + "')";
-        return str;
+    private static String generateInsert(String name, long phone) {
+        return "INSERT INTO services (name, phone) " +
+                "VALUES ('" + name + "', " + phone + ")";
     }
 
-    private static String updateServiceById(int id, String name, int phone) {
+    private static String updateServiceById(int id, String name, long phone) {
         return "UPDATE services SET name='" + name + "' phone=" + phone +
-                " WHERE id=" + id;
+                " WHERE service_id=" + id;
     }
 
     private static String deleteById(int id) {
-        return "DELETE FROM services WHERE id=" + id;
+        return "DELETE FROM services WHERE service_id=" + id;
     }
 }

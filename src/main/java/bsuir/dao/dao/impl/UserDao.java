@@ -59,7 +59,7 @@ public class UserDao implements CrudDao<User> {
         try (Connection conn = ConnectorDB.getConnection();
              Statement statement = conn.createStatement()) {
 
-            int row = statement.executeUpdate(generateInsert(user.getLogin(), user.getPassword()));
+            int row = statement.executeUpdate(generateInsert(user.getId(), user.getLogin(), user.getPassword()));
 
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
@@ -89,10 +89,9 @@ public class UserDao implements CrudDao<User> {
         }
     }
 
-    private static String generateInsert(String login, String password) {
-        String str = "INSERT INTO users (login, password) " +
-                "VALUES ('" + login + "','" + password + ")";
-        return str;
+    private static String generateInsert(int id, String login, String password) {
+        return "INSERT INTO users ( login, password) " +
+                "VALUES (" + " '" + login + "','" + password + "')";
     }
 
     private static String updateUserById(int id, String login, String password) {

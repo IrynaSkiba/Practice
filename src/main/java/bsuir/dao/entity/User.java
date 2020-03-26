@@ -3,6 +3,7 @@ package bsuir.dao.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Collections;
 import java.util.List;
 
 @Getter
@@ -22,6 +23,7 @@ public class User {
     public User(String login, String password) {
         this.login = login;
         this.password = password;
+        this.events = Collections.emptyList();
     }
 
     public User(int id) {

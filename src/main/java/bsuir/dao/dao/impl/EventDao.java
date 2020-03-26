@@ -6,8 +6,8 @@ import bsuir.dao.entity.Event;
 import bsuir.dao.entity.Service;
 import bsuir.dao.entity.User;
 
+import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,16 +30,16 @@ public class EventDao implements CrudDao<Event> {
             while (rs.next()) {
                 if (flag) {
                     String name = rs.getString("name");
-                    LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
+                    BigDecimal cost = rs.getBigDecimal("cost");
 
                     user = new User(rs.getInt("user_id"));
                     flag = false;
-                    event = new Event(id, name, date, user);
+                    event = new Event(id, name, cost, user);
                 }
-                if (rs.getInt("service_id") != 0) {
-                    service = new Service(rs.getInt("service_id"));
-                    event.getServices().add(service);
-                }
+//                if (rs.getInt("service_id") != 0) {
+//                    service = new Service(rs.getInt("service_id"));
+//                    event.getServices().add(service);
+//                }
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -58,11 +58,11 @@ public class EventDao implements CrudDao<Event> {
             while (rs.next()) {
                 int id = rs.getInt("event_id");
                 String name = rs.getString("name");
-                LocalDateTime date = rs.getTimestamp("date").toLocalDateTime();
+                BigDecimal cost = rs.getBigDecimal("cost");
 
                 user = new User(rs.getInt("user_id"));
 
-                event = new Event(id, name, date, user);
+                event = new Event(id, name, cost, user);
                 events.add(event);
             }
         } catch (SQLException e) {
@@ -76,7 +76,7 @@ public class EventDao implements CrudDao<Event> {
         try (Connection conn = ConnectorDB.getConnection();
              Statement statement = conn.createStatement()) {
 
-            int row = statement.executeUpdate(generateInsert(event.getName(), event.getDate(), event.getUser().getId()));
+            int row = statement.executeUpdate(generateInsert(event.getName(), event.getCost(), event.getUser().getId()));
 
         } catch (SQLException e) {
             System.err.format("SQL State: %s\n%s", e.getSQLState(), e.getMessage());
@@ -88,7 +88,7 @@ public class EventDao implements CrudDao<Event> {
         try (Connection conn = ConnectorDB.getConnection();
              Statement statement = conn.createStatement()) {
 
-            int row = statement.executeUpdate(updateEventById(event.getId(), event.getName(), event.getDate(),
+            int row = statement.executeUpdate(updateEventById(event.getId(), event.getName(), event.getCost(),
                     event.getUser().getId()));
 
         } catch (SQLException e) {
@@ -114,14 +114,13 @@ public class EventDao implements CrudDao<Event> {
         }
     }
 
-    private static String generateInsert(String name, LocalDateTime date, int userId) {
-        String str = "INSERT INTO events (name, date, user_id) " +
-                "VALUES ('" + name + "'," + date + "," + "," + userId + ")";
-        return str;
+    private static String generateInsert(String name, BigDecimal cost, int userId) {
+        return "INSERT INTO events (name, cost, user_id) " +
+                "VALUES ('" + name + "'," + cost + "," + null + ")";
     }
 
-    private static String updateEventById(int id, String name, LocalDateTime date, int userId) {
-        return "UPDATE events SET name='" + name + " date=" + date + " user_id=" + userId +
+    private static String updateEventById(int id, String name, BigDecimal cost, int userId) {
+        return "UPDATE events SET name='" + name + " cost=" + cost + " user_id=" + userId +
                 " WHERE id=" + id;
     }
 
