@@ -3,15 +3,22 @@ package bsuir.dao.entity;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.util.Collections;
 import java.util.List;
 
 @Getter
 @Setter
+@Entity
+@Table(name = "users")
 public class User {
+    @Id
+    @Column(name = "id", unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String login;
     private String password;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Event> events;
 
     public User(int id, String login, String password) {
